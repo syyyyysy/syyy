@@ -9,6 +9,7 @@ import random
 today = datetime.now() + timedelta(hours=8)
 start_date = os.environ['START_DATE']
 city = os.environ['CITY']
+city2 = os.environ['CITY2']
 birthday = os.environ['BIRTHDAY']
 birthday2 = os.environ['BIRTHDAY2']
 
@@ -21,6 +22,12 @@ template_id = os.environ["TEMPLATE_ID"]
 
 def get_weather():
   url = "http://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&city=" + city
+  res = requests.get(url).json()
+  weather = res['data']['list'][0]
+  return weather['weather'], math.floor(weather['temp']), math.floor(weather['high']), math.floor(weather['low'])
+
+def get_weather2():
+  url = "http://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&city=" + city2
   res = requests.get(url).json()
   weather = res['data']['list'][0]
   return weather['weather'], math.floor(weather['temp']), math.floor(weather['high']), math.floor(weather['low'])
@@ -45,7 +52,16 @@ def get_wea_war():
   tem_wea,tem_a,tem_b,tem_c=get_weather()
   if str(tem_wea) == "晴":
     return "宝今天天气好，出去记得防晒噢"
-  elif str(tem_wea) == "阴":
+  else str(tem_wea) == "阴":
+    return "今天可以出去走走噢宝~"
+  else :
+    return "今天可能会下雨哎，宝记得带伞呢"
+
+def get_wea_war2():
+  tem_wea,tem_a,tem_b,tem_c=get_weather2()
+  if str(tem_wea) == "晴":
+    return "宝今天天气好，出去记得防晒噢"
+  else str(tem_wea) == "阴":
     return "今天可以出去走走噢宝~"
   else :
     return "今天可能会下雨哎，宝记得带伞呢"
@@ -64,6 +80,7 @@ client = WeChatClient(app_id, app_secret)
 
 wm = WeChatMessage(client)
 wea, temperature, highest, lowest = get_weather()
+wea2, temperature2, highest2, lowest2 = get_weather2()
 now_year = today.year
 now_month = today.month
 now_day = today.day
@@ -80,9 +97,22 @@ data = {"weather_warning":{"value": get_wea_war()},
         "highest":{"value":highest, "color":get_random_color()},
         "lowest":{"value":lowest,"color":get_random_color()}
         }
-count = 0
-for user_id in user_ids:
-  res = wm.send_template(user_id, template_id, data)
-  count+=1
 
-print("发送了" + str(count) + "条消息")
+data2 = {"weather_warning":{"value": get_wea_war2()},
+        "date_D":{"value":now_day},
+        "date_M":{"value":now_month},
+        "date_Y":{"value":now_year},
+        "weather":{"value":wea2},
+        "temperature":{"value":temperature2},
+        "love_days":{"value":get_count()},
+        "birthday_left":{"value":get_birthday(), "color":get_random_color()},
+        "birthday_left2":{"value":get_birthday2(), "color":get_random_color()},
+        "words":{"value":get_words(), "color":get_random_color()},
+        "highest":{"value":highest2, "color":get_random_color()},
+        "lowest":{"value":lowest2,"color":get_random_color()}
+        }
+
+
+res = wm.send_template(user_ids[0], template_id, data)
+res = wm.send_template(user_ids[1], template_id, data2)
+
