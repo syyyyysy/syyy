@@ -65,7 +65,7 @@ client = WeChatClient(app_id, app_secret)
 wm = WeChatMessage(client)
 wea, temperature, highest, lowest = get_weather()
 now_year = today.year
-now_month = todey.month
+now_month = today.month
 now_day = today.day
 data = {"weather_warning":{"value": get_wea_war()},
         "date_D":{"value":now_day},
