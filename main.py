@@ -61,7 +61,7 @@ def get_wea_war2():
   tem_wea,tem_a,tem_b,tem_c=get_weather2()
   if str(tem_wea) == "晴":
     return "宝今天天气好，出去记得防晒噢"
-  else str(tem_wea) == "阴":
+  elif str(tem_wea) == "阴":
     return "今天可以出去走走噢宝~"
   else :
     return "今天可能会下雨哎，宝记得带伞呢"
